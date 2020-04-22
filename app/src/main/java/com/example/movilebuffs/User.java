@@ -15,7 +15,23 @@ public class User {
         password = pass;
     }
 
-    public String getFirstName(){
+    public String getFirstName()
+    {
         return firstName;
+    }
+
+    /**
+     * Function to check user password for log in purposes
+     * @param pass String to be checked against actual user's password
+     * @return true if password is correct, false if incorrect.
+     */
+    public Boolean validateLogIn(String pass)
+    {
+        if(pass.equals(password)){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

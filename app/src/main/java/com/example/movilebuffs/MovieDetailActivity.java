@@ -14,7 +14,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
     }
 
-    /** Called when the user taps the View Poster button */
+    /**
+     * Called when the user taps the View Poster button
+     * Navigates to MoviePosterActivity with the selected Movie
+     * */
     public void viewPoster(View view) {
         Intent intent = new Intent(this, MoviePosterActivity.class);
         startActivity(intent);

@@ -14,7 +14,10 @@ public class MoviePosterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_poster);
     }
 
-    /** Called when the user taps the Search Movies button */
+    /**
+     * Called when the user taps the Search Movies button
+     * Navigates to MovieListActivity
+     * */
     public void searchMovies(View view) {
         Intent intent = new Intent(this, MovieListActivity.class);
         startActivity(intent);
