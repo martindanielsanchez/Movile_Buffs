@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,8 +19,12 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class MovieListActivity extends AppCompatActivity {
 
@@ -46,17 +52,23 @@ public class MovieListActivity extends AppCompatActivity {
         //Intent intent = new Intent(this, MoviePosterActivity.class);
         //startActivity(intent);
 
-        final ScrollView list = (ScrollView) findViewById(R.id.scrollViewList);
+       // final ScrollView list = (ScrollView) findViewById(R.id.scrollViewList);
         EditText ed1 = (EditText) findViewById(R.id.editText);
         String searchString = ed1.getText().toString();
-        //final TextView tv1 = new TextView(this);
-        //tv1.setText("TESTING");
 
-       // list.addView(tv1);
-        //Toast.makeText(getApplicationContext(), "testing", Toast.LENGTH_SHORT).show();
+        //set up listview
+        final ListView list = (ListView) findViewById(R.id.movieList);
+        final ArrayList<String> arrayList = new ArrayList<>();
 
+/*
+        arrayList.add("MOVIE 1");
+        arrayList.add("MOVIE 2");
+        arrayList.add("MOVIE 3");
+        arrayList.add("MOVIE 4");
+        arrayList.add("MOVIE 5");
 
-
+        ArrayAdapter arrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, arrayList);
+        list.setAdapter(arrayAdapter);*/
 
         // Get a RequestQueue
         RequestQueue queue = MySingleton.getInstance(MovieListActivity.this.getApplicationContext()).
@@ -82,21 +94,44 @@ public class MovieListActivity extends AppCompatActivity {
                           //  list.addView(tv1);
                             //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
 
-                            title = response.toString();
-                            Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
+                            //title = response.toString();
+                            //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
+                            //JSONArray jsonList = response.getJSONArray("Search");
 
-                            /*try {
-                               // title = response.getJSONObject("Search").getString("title");
-                                title = response.toString();
+                            try {
+                                JSONArray jsonList = response.getJSONArray("Search");
+                                //Toast.makeText(getApplicationContext(), jsonList.toString(), Toast.LENGTH_LONG).show();
+                               // ArrayList<String> list = new ArrayList<String>();
+                                String sTest = null;
+                                //ArrayList<String> arrayList2 = new ArrayList<>();
+
+                                for (int i = 0; i < jsonList.length(); i++) { //traverses each result from search
+                                 //   list.add(jsonList.getString(i));
+                                    title = jsonList.getJSONObject(i).getString("Title");
+                                   // title = jsonList.getJSONObject(i).toString();
+                                    //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
+                                    //arrayList.add(title);
+                                    arrayList.add(title);
+                                    //sTest += jsonList.getString(i);
+                                }
+                                // Add list to view
+                                ArrayAdapter arrayAdapter = new ArrayAdapter(MovieListActivity.this,android.R.layout.simple_list_item_1, arrayList);
+                                list.setAdapter(arrayAdapter);
+
+
+                               // Toast.makeText(getApplicationContext(), sTest, Toast.LENGTH_LONG).show();
+
+                                // title = response.getJSONObject("Search").getString("title");
+                                //title = response.toString();
                                 //cityName = response.getString("name");
                                // wind = response.getJSONObject("wind").getString("speed");
-                                Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
 
 
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }*/
+                            }
                             //textView.setText("City: " + cityName + '\n' + "Temperature: " + temperature + '\n' + "Wind: " + wind + '\n' + "Pressure: " + pressure + '\n' +
                             //        "Humidity: " + humidity + '\n' + "Sunrise: " + sunrise);
                         }
@@ -112,6 +147,11 @@ public class MovieListActivity extends AppCompatActivity {
 // Access the RequestQueue through your singleton class.
             MySingleton.getInstance(MovieListActivity.this).addToRequestQueue(jsonObjectRequest);
 
+
+
+// Add list to view
+       //ArrayAdapter arrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, arrayList);
+       //list.setAdapter(arrayAdapter);
 
     }
 }
