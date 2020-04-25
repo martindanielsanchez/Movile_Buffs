@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MovieListActivity extends AppCompatActivity {
-
+    public static final String EXTRA_MESSAGE = "com.example.movilebuffs.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +50,7 @@ public class MovieListActivity extends AppCompatActivity {
      * Populates ScrollView with movies that match search criteria
      * */
     public void searchMovies(View view) {
-        //Intent intent = new Intent(this, MoviePosterActivity.class);
+        final Intent intent = new Intent(this, MovieDetailActivity.class);
         //startActivity(intent);
 
        // final ScrollView list = (ScrollView) findViewById(R.id.scrollViewList);
@@ -59,16 +60,6 @@ public class MovieListActivity extends AppCompatActivity {
         //set up listview
         final ListView list = (ListView) findViewById(R.id.movieList);
         final ArrayList<String> arrayList = new ArrayList<>();
-
-/*
-        arrayList.add("MOVIE 1");
-        arrayList.add("MOVIE 2");
-        arrayList.add("MOVIE 3");
-        arrayList.add("MOVIE 4");
-        arrayList.add("MOVIE 5");
-
-        ArrayAdapter arrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, arrayList);
-        list.setAdapter(arrayAdapter);*/
 
         // Get a RequestQueue
         RequestQueue queue = MySingleton.getInstance(MovieListActivity.this.getApplicationContext()).
@@ -81,52 +72,44 @@ public class MovieListActivity extends AppCompatActivity {
 
                         @Override
                         public void onResponse(JSONObject response) {
+                            //create empty list of movies
+                            ArrayList <Movie> movies = new ArrayList<>();
                             String title = null;
-                            String temperature = null;
-                            String wind = null;
-                            String pressure = null;
-                            String humidity = null;
-                            String sunrise = null;
-                            //title = response.toString();
-
-                            //tv1.setText(title);
-
-                          //  list.addView(tv1);
-                            //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
-
-                            //title = response.toString();
-                            //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
-                            //JSONArray jsonList = response.getJSONArray("Search");
+                            String imdb = null;
+                           /* String year = null;
+                            String genre = null;
+                            String director = null;
+                            String writer = null;
+                            String plot = null;
+*/
 
                             try {
                                 JSONArray jsonList = response.getJSONArray("Search");
                                 //Toast.makeText(getApplicationContext(), jsonList.toString(), Toast.LENGTH_LONG).show();
-                               // ArrayList<String> list = new ArrayList<String>();
-                                String sTest = null;
+                               final ArrayList<String> imdbList = new ArrayList<String>();
+                                //String sTest = null;
                                 //ArrayList<String> arrayList2 = new ArrayList<>();
 
                                 for (int i = 0; i < jsonList.length(); i++) { //traverses each result from search
-                                 //   list.add(jsonList.getString(i));
                                     title = jsonList.getJSONObject(i).getString("Title");
-                                   // title = jsonList.getJSONObject(i).toString();
-                                    //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_LONG).show();
-                                    //arrayList.add(title);
-                                    arrayList.add(title);
-                                    //sTest += jsonList.getString(i);
+                                    imdb = jsonList.getJSONObject(i).getString("imdbID");
+                                    imdbList.add(imdb);
+                                    arrayList.add(title); //add to list that will be displayed in ListView
                                 }
                                 // Add list to view
                                 ArrayAdapter arrayAdapter = new ArrayAdapter(MovieListActivity.this,android.R.layout.simple_list_item_1, arrayList);
                                 list.setAdapter(arrayAdapter);
 
-
-                               // Toast.makeText(getApplicationContext(), sTest, Toast.LENGTH_LONG).show();
-
-                                // title = response.getJSONObject("Search").getString("title");
-                                //title = response.toString();
-                                //cityName = response.getString("name");
-                               // wind = response.getJSONObject("wind").getString("speed");
-                                //Toast.makeText(getApplicationContext(), title, Toast.LENGTH_SHORT).show();
-
+                                //add event listener to each item in list
+                                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
+                                        //go to MovieDetailActivity and send the imdb code to make another API CALL from there
+                                        intent.putExtra(EXTRA_MESSAGE, imdbList.get(position));
+                                        startActivity(intent);
+                                    }
+                                });
 
 
                             } catch (JSONException e) {
@@ -140,18 +123,13 @@ public class MovieListActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             //TODO: Handle error
-                            //textView.setText("That didn't work!");
+                            Toast.makeText(MovieListActivity.this, "Search Failed!", Toast.LENGTH_LONG).show();
 
                         }
                     });
 // Access the RequestQueue through your singleton class.
             MySingleton.getInstance(MovieListActivity.this).addToRequestQueue(jsonObjectRequest);
 
-
-
-// Add list to view
-       //ArrayAdapter arrayAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, arrayList);
-       //list.setAdapter(arrayAdapter);
 
     }
 }
