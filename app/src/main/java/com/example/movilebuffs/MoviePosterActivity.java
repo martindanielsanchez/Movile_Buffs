@@ -16,7 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MoviePosterActivity extends AppCompatActivity {
-
+    private String userJSON = null;
+    private String movieJSON = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,23 +25,10 @@ public class MoviePosterActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         ImageView imageView = (ImageView) findViewById(R.id.imageView);
-        String posterLink = intent.getStringExtra(MainActivity.EXTRA_MESSAGE); //get poster link
+        String posterLink = intent.getStringExtra(MovieDetailActivity.POSTER); //get poster link
+        userJSON = intent.getStringExtra(MainActivity.USER); //get user json string
+        movieJSON = intent.getStringExtra(MovieDetailActivity.MOVIE); //get movie json string
 
-        /*
-        URL url = null;
-        try {
-            url = new URL(posterLink);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        Bitmap bmp = null;
-        try {
-            bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            imageView.setImageBitmap(bmp);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
         Picasso.get().load(posterLink).into(imageView);
         Toast.makeText(MoviePosterActivity.this, "Link: " + posterLink, Toast.LENGTH_LONG).show();
     }
@@ -51,7 +39,7 @@ public class MoviePosterActivity extends AppCompatActivity {
      * */
     public void searchMovies(View view) {
         Intent intent = new Intent(this, MovieListActivity.class);
-        //need to send user too
+        intent.putExtra(MainActivity.USER, userJSON); //also send USER
         startActivity(intent);
     }
 }

@@ -42,10 +42,15 @@
         android:layout_marginTop="29dp"
         android:layout_marginEnd="83dp"
         android:layout_marginRight="83dp"
+        android:layout_marginBottom="32dp"
+        android:onClick="favoritesHandler"
         android:text="Add to Favorites"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDetails"
         app:layout_constraintEnd_toStartOf="@+id/button4"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textViewDetails"
@@ -53,7 +58,7 @@
         android:layout_height="505dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
@@ -66,8 +71,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button3"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/button4" />
 
     <Button
         android:id="@+id/button4"
@@ -76,8 +80,10 @@
         android:layout_marginTop="29dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
+        android:layout_marginBottom="32dp"
         android:onClick="viewPoster"
         android:text="View Poster"
+        app:layout_constraintBottom_toBottomOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toTopOf="@+id/button3" />
 </androidx.constraintlayout.widget.ConstraintLayout>

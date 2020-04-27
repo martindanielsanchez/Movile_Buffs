@@ -28,7 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MovieListActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.movilebuffs.MESSAGE";
+    public static final String IMDB = "com.example.movilebuffs.IMDB";
+    public static final String USER = "com.example.movilebuffs.USER";
+    private String userJSON = null;
+    private User logged = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,13 +39,52 @@ public class MovieListActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        String s = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
-        User logged = new Gson().fromJson(s, User.class);
+        userJSON = intent.getStringExtra(MainActivity.USER);
+        logged = new Gson().fromJson(userJSON, User.class);
         final TextView textView =  findViewById(R.id.textViewUser);
         textView.setText("Hello " + logged.getFirstName());
     }
 
+    /**
+     * Called when the user taps the View Favorites button
+     * Populates ScrollView with User's favorite movies
+     * */
+    public void viewFavorites(View view){
+        final Intent intent = new Intent(this, MovieDetailActivity.class);
+        //set up listview
+        final ListView list = (ListView) findViewById(R.id.movieList);
+        final ArrayList<String> arrayList = new ArrayList<>();
 
+        final ArrayList<String> imdbList = new ArrayList<String>();
+        ArrayList<Movie> favList = logged.getFavorites();
+        if(!favList.isEmpty()) {
+            for (int i = 0; i < favList.size(); i++) { //traverses each movie
+                String title = favList.get(i).getTitle();
+                String imdb = favList.get(i).getImdb();
+                imdbList.add(imdb);
+                arrayList.add(title); //add to list that will be displayed in ListView
+            }
+            // Add list to view
+            ArrayAdapter arrayAdapter = new ArrayAdapter(MovieListActivity.this, android.R.layout.simple_list_item_1, arrayList);
+            list.setAdapter(arrayAdapter);
+
+            //add event listener to each item in list
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
+                    //go to MovieDetailActivity and send the imdb code to make another API CALL from there
+                    intent.putExtra(USER, userJSON); //also send USER
+                    intent.putExtra(IMDB, imdbList.get(position));
+                    startActivity(intent);
+                }
+            });
+        }
+        else{
+            //alert user list is empty
+            Toast.makeText(MovieListActivity.this, "Favorites List is empty!", Toast.LENGTH_LONG).show();
+        }
+    }
 
 
     /**
@@ -64,7 +106,6 @@ public class MovieListActivity extends AppCompatActivity {
         // Get a RequestQueue
         RequestQueue queue = MySingleton.getInstance(MovieListActivity.this.getApplicationContext()).
                 getRequestQueue();
-       // String url = "https://api.openweathermap.org/data/2.5/weather?zip=33498&appid=26182d24dcc44f587cb7bba6786bd237";
         String url = "http://www.omdbapi.com/?s=" + searchString + "&apikey=e7272e5d";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -76,19 +117,10 @@ public class MovieListActivity extends AppCompatActivity {
                             ArrayList <Movie> movies = new ArrayList<>();
                             String title = null;
                             String imdb = null;
-                           /* String year = null;
-                            String genre = null;
-                            String director = null;
-                            String writer = null;
-                            String plot = null;
-*/
 
                             try {
                                 JSONArray jsonList = response.getJSONArray("Search");
-                                //Toast.makeText(getApplicationContext(), jsonList.toString(), Toast.LENGTH_LONG).show();
                                final ArrayList<String> imdbList = new ArrayList<String>();
-                                //String sTest = null;
-                                //ArrayList<String> arrayList2 = new ArrayList<>();
 
                                 for (int i = 0; i < jsonList.length(); i++) { //traverses each result from search
                                     title = jsonList.getJSONObject(i).getString("Title");
@@ -106,7 +138,8 @@ public class MovieListActivity extends AppCompatActivity {
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                         Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
                                         //go to MovieDetailActivity and send the imdb code to make another API CALL from there
-                                        intent.putExtra(EXTRA_MESSAGE, imdbList.get(position));
+                                        intent.putExtra(USER, userJSON); //also send USER
+                                        intent.putExtra(IMDB, imdbList.get(position));
                                         startActivity(intent);
                                     }
                                 });

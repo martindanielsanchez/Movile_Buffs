@@ -7,11 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String EXTRA_MESSAGE = "com.example.movilebuffs.MESSAGE";
+    public static final String USER = "com.example.movilebuffs.USER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +34,12 @@ public class MainActivity extends AppCompatActivity {
 
         //check if username is in database and retrieve it, if not alert user
 
-        User logUser = new User("Valentino", "Rossi", "vale46", "123"); //CREATING USER FOR TESTING
+        User logUser = new User("Valentino", "Rossi", "vale46", "123", new ArrayList<Movie>()); //CREATING USER FOR TESTING
 
         Boolean validate = logUser.validateLogIn(pass);
         if(validate){
             String s = (new Gson().toJson(logUser)); //SERIALIZING OBJECT TO SEND IT TO NEXT ACTIVITY
-            intent.putExtra(EXTRA_MESSAGE, s);
+            intent.putExtra(USER, s);
             startActivity(intent);
         }
         else {
