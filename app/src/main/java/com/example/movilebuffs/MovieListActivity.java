@@ -136,7 +136,7 @@ public class MovieListActivity extends AppCompatActivity {
                                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                        Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
                                         //go to MovieDetailActivity and send the imdb code to make another API CALL from there
                                         intent.putExtra(USER, userJSON); //also send USER
                                         intent.putExtra(IMDB, imdbList.get(position));
