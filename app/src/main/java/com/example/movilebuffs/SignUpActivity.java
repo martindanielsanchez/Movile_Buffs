@@ -35,12 +35,9 @@ public class SignUpActivity extends AppCompatActivity {
     String pass;
 
     // url to create new product
-    //private static String url_create_user = "https://api.androidhive.info/android_connect/create_user.php";
-  //  private static String url_create_user = "https://localhost/android_connect/create_user.php";
     private static String url_create_user = "http://192.168.135.1:80/android_connect/create_user.php";
-    //C:\xampp\htdocs\android_connect\create_user.php
-   // private static String url_create_user = "C:\\xampp\\htdocs\\android_connect\\create_user.php";
-    //http://localhost/android_connect/test.php
+    private static String url_check_username = "http://192.168.135.1:80/android_connect/check_username.php";
+
 
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
@@ -69,14 +66,9 @@ public class SignUpActivity extends AppCompatActivity {
         last = lastName.getText().toString();
         user = username.getText().toString();
         pass = password.getText().toString();
-/*
-first = "Andrea";
-last = "Dovizioso";
-user = "dovi04";
-pass = "andrea04";
-*/
+
             //CHECK THAT PASSWORDS MATCH. IF NOT ALERT USER.
-        //CHECK WITH DATABASE IF USERNAME EXISTS. IF NOT UPDATE DATABASE.
+
 
         new CreateNewUser().execute(); // creating new user in background thread
 
@@ -119,52 +111,89 @@ pass = "andrea04";
             String user = username.getText().toString();
             String pass = password.getText().toString();*/
 
+            //First check if username is already taken by calling webservice that in turn calls a stored procedure
             // Building Parameters
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("username", user));
-            params.add(new BasicNameValuePair("password", pass));
-            params.add(new BasicNameValuePair("first_name", first));
-            params.add(new BasicNameValuePair("last_name", last));
-
+            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+            params1.add(new BasicNameValuePair("username", user));
             // getting JSON Object
-            // Note that create product url accepts POST method
-            JSONObject json = jsonParser.makeHttpRequest(url_create_user,
-                    "POST", params);
+            // Note that check username url accepts POST method
+            JSONObject json1 = jsonParser.makeHttpRequest(url_check_username,
+                    "POST", params1);
 
             // check log cat fro response
-            Log.d("Create Response", json.toString());
+            Log.d("Create Response", json1.toString());
 
             // check for success tag
             try {
-                int success = json.getInt(TAG_SUCCESS);
+                int success1 = json1.getInt(TAG_SUCCESS);
 
-                if (success == 1) {
-                    // successfully created product
+                if (success1 == 1) {
+                    // There is no user with that username
                     //Intent i = new Intent(getApplicationContext(), AllProductsActivity.class);
                     //startActivity(i);
+                    /*
                     runOnUiThread(new Runnable() {
-
                         public void run() {
+                            Toast.makeText(getApplicationContext(), "Good Username pick!", Toast.LENGTH_LONG).show();
+                        }
+                    });*/
 
-                            Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                    //NOW WE WILL CREATE THE USER
+                    // Building Parameters
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+                    params.add(new BasicNameValuePair("username", user));
+                    params.add(new BasicNameValuePair("password", pass));
+                    params.add(new BasicNameValuePair("first_name", first));
+                    params.add(new BasicNameValuePair("last_name", last));
+
+                    // getting JSON Object
+                    // Note that create user url accepts POST method
+                    JSONObject json = jsonParser.makeHttpRequest(url_create_user,
+                            "POST", params);
+
+                    // check log cat fro response
+                    Log.d("Create Response", json.toString());
+                    // check for success tag
+                    try {
+                        int success = json.getInt(TAG_SUCCESS);
+
+                        if (success == 1) {
+                            // successfully created user
+                            //Intent i = new Intent(getApplicationContext(), AllProductsActivity.class);
+                            //startActivity(i);
+                            runOnUiThread(new Runnable() {
+
+                                public void run() {
+
+                                    Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                            // closing this screen
+                            finish();
+                        } else {
+                            // failed to create product
+                            runOnUiThread(new Runnable() {
+
+                                public void run() {
+
+                                    Toast.makeText(getApplicationContext(), "Could not create user, check your internet connection!", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
 
                         }
-                    });
-                   // Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                    // closing this screen
-                   // finish();
                 } else {
-                    // failed to create product
+                    // There is a user with that username
                     runOnUiThread(new Runnable() {
-
                         public void run() {
-
-                            Toast.makeText(getApplicationContext(), "Fail!", Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(getApplicationContext(), "There is Already a user with that Username!", Toast.LENGTH_LONG).show();
                         }
                     });
-
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

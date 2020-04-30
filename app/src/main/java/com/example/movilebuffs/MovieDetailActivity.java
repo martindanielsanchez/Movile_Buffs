@@ -181,6 +181,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         //first check if movie is already in list
         if(!logged.isMovieFavorite(film)) {
             Toast.makeText(MovieDetailActivity.this, "Movie not favorite, returned false", Toast.LENGTH_LONG).show();
+
+            
+
             logged.addFavorite(film);
             //also update database
         }

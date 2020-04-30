@@ -7,14 +7,15 @@ public class User {
     private String firstName;
     private String lastName;
     private String username;
-    private String password;
+    //private String password;
     private ArrayList<Movie> favorites;
 
-    User(String first, String last, String user, String pass, ArrayList<Movie> fav){
+    //User(String first, String last, String user, String pass, ArrayList<Movie> fav){
+    User(String first, String last, String user, ArrayList<Movie> fav){
         firstName = first;
         lastName = last;
         username = user;
-        password = pass;
+       // password = pass;
         favorites = fav;
     }
 
@@ -40,6 +41,7 @@ public class User {
      * @param pass String to be checked against actual user's password
      * @return true if password is correct, false if incorrect.
      */
+    /*
     public Boolean validateLogIn(String pass)
     {
         if(pass.equals(password)){
@@ -48,7 +50,7 @@ public class User {
         else{
             return false;
         }
-    }
+    }*/
 
     /**
      * Function to check if movie is in favorites list
