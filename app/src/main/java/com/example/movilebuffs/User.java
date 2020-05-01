@@ -28,6 +28,8 @@ public class User {
         return favorites;
     }
 
+    public String getUsername(){ return username;}
+
     /**
      * Function to add a new movie to list of favorite movies
      * @param favMovie is a movie to be added to list

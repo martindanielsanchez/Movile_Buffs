@@ -2,8 +2,11 @@ package com.example.movilebuffs;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,11 +20,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MovieDetailActivity extends AppCompatActivity {
     private String poster = null;
@@ -30,13 +36,23 @@ public class MovieDetailActivity extends AppCompatActivity {
     private String userJSON = null;
     private Movie film = null;
     private Boolean isFavorite = false;
+    // Progress Dialog
+    private ProgressDialog pDialog;
+    JSONParser jsonParser = new JSONParser();
+    private static String url_add_favorite = "http://192.168.135.1:80/android_connect/add_favorite.php";
+    private static String url_remove_favorite = "http://192.168.135.1:80/android_connect/remove_favorite.php";
+    // JSON Node names
+    private static final String TAG_SUCCESS = "success";
+    private User logged;
+    private String imdb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         Intent intent = getIntent();
-        final String imdb = intent.getStringExtra(MovieListActivity.IMDB); //get imdb from selected movie
+        //final String imdb = intent.getStringExtra(MovieListActivity.IMDB); //get imdb from selected movie
+        imdb = intent.getStringExtra(MovieListActivity.IMDB); //get imdb from selected movie
         userJSON = intent.getStringExtra(MainActivity.USER); //get user json string
         //set up variables for textviews
         final TextView movieDetails = (TextView) findViewById(R.id.textViewDetails);
@@ -176,16 +192,15 @@ public class MovieDetailActivity extends AppCompatActivity {
      * Adds the selected movie to the user's favorites list
      */
     public void addToFavorites(View view){
-        User logged = new Gson().fromJson(userJSON, User.class); //get User from JSON string
+        logged = new Gson().fromJson(userJSON, User.class); //get User from JSON string
 
         //first check if movie is already in list
         if(!logged.isMovieFavorite(film)) {
-            Toast.makeText(MovieDetailActivity.this, "Movie not favorite, returned false", Toast.LENGTH_LONG).show();
+           // Toast.makeText(MovieDetailActivity.this, "Movie not favorite, returned false", Toast.LENGTH_LONG).show();
 
-            
+            new AddFavorite().execute(); //updates database
+            logged.addFavorite(film); //updates object used in app
 
-            logged.addFavorite(film);
-            //also update database
         }
         else{
             Toast.makeText(MovieDetailActivity.this, "Movie is favorite, returned true", Toast.LENGTH_LONG).show();
@@ -202,16 +217,171 @@ public class MovieDetailActivity extends AppCompatActivity {
      * Removes the selected movie from the user's favorites list
      */
     public void removeFromFavorites(View view){
-        User logged = new Gson().fromJson(userJSON, User.class); //get User from JSON string
+        logged = new Gson().fromJson(userJSON, User.class); //get User from JSON string
         //first check if movie is effectively in list
         if(logged.isMovieFavorite(film)) {
+            new RemoveFavorite().execute(); //updates database
             logged.removeFromFavorites(film);
-            //also update database
         }
         //Send user back to MovieListActivity
         Intent intent = new Intent(this, MovieListActivity.class);
         userJSON = (new Gson().toJson(logged)); //update user json string to contain new list of favorites
         intent.putExtra(MainActivity.USER, userJSON); //send USER
         startActivity(intent);
+    }
+
+    /**
+     * Background Async Task to Add new favorite movie
+     * */
+    class AddFavorite extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MovieDetailActivity.this);
+            pDialog.setMessage("Adding Favorite..");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        /**
+         * Adding to favorites
+         * */
+        protected String doInBackground(String... args) {
+
+            String username = logged.getUsername();
+            //String imdb = film.getImdb();
+            String title = film.getTitle();
+
+            // Building Parameters
+            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+            params1.add(new BasicNameValuePair("username", username));
+            params1.add(new BasicNameValuePair("imdb", imdb));
+            params1.add(new BasicNameValuePair("title", title));
+            // getting JSON Object
+            // Note that add_favorite url accepts POST method
+            JSONObject json1 = jsonParser.makeHttpRequest(url_add_favorite,
+                    "POST", params1);
+
+            // check log cat fro response
+            Log.d("Create Response", json1.toString());
+
+            // check for success tag
+            try {
+                int success1 = json1.getInt(TAG_SUCCESS);
+
+                if (success1 == 1) {
+                    // favorite successfully added
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Successfully added Favorite", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else {
+                    // Favorite was not added
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Could not add favorite. Check Internet Connection", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once done
+            pDialog.dismiss();
+        }
+
+    }
+
+    /**
+     * Background Async Task to Remove movie from favorite table in database
+     * */
+    class RemoveFavorite extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MovieDetailActivity.this);
+            pDialog.setMessage("Removing Favorite..");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        /**
+         * Removing from favorites
+         * */
+        protected String doInBackground(String... args) {
+
+            String username = logged.getUsername();
+           // String title = film.getTitle();
+
+            // Building Parameters
+            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
+            params1.add(new BasicNameValuePair("username", username));
+            params1.add(new BasicNameValuePair("imdb", imdb));
+            //params1.add(new BasicNameValuePair("title", title));
+            // getting JSON Object
+            // Note that add_favorite url accepts POST method
+            JSONObject json1 = jsonParser.makeHttpRequest(url_remove_favorite,
+                    "POST", params1);
+
+            // check log cat fro response
+            Log.d("Create Response", json1.toString());
+
+            // check for success tag
+            try {
+                int success1 = json1.getInt(TAG_SUCCESS);
+
+                if (success1 == 1) {
+                    // favorite successfully removed
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Successfully removed Favorite", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else {
+                    // Favorite was not added
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Could not remove favorite. Check Internet Connection", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once done
+            pDialog.dismiss();
+        }
+
     }
 }
