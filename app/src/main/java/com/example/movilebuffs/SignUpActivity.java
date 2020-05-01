@@ -28,11 +28,13 @@ public class SignUpActivity extends AppCompatActivity {
     EditText lastName;
     EditText username;
     EditText password;
+    EditText password2;
 
     String first;
     String last;
     String user;
     String pass;
+    String pass2;
 
     // url to create new product
     private static String url_create_user = "http://192.168.135.1:80/android_connect/create_user.php";
@@ -51,29 +53,33 @@ public class SignUpActivity extends AppCompatActivity {
         lastName = (EditText) findViewById(R.id.editTextLast);
         username = (EditText) findViewById(R.id.editTextUser);
         password = (EditText) findViewById(R.id.editTextPass);
+        password2 = (EditText) findViewById(R.id.editTextPass2);
 
 
     }
 
     /** Called when the user taps the Save button */
     public void save(View view) {
-
-        //CHECK ALL FIELDS ARE FILLED. IF NOT ALERT USER.
-
         //SAVE INFO INTO VARIABLES
-
         first = firstName.getText().toString();
         last = lastName.getText().toString();
         user = username.getText().toString();
         pass = password.getText().toString();
+        pass2 = password2.getText().toString();
 
-            //CHECK THAT PASSWORDS MATCH. IF NOT ALERT USER.
-
-
-        new CreateNewUser().execute(); // creating new user in background thread
-
-        //Intent intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
+        //CHECK ALL FIELDS ARE FILLED. IF NOT ALERT USER.
+        if(!first.isEmpty() && !last.isEmpty() && !user.isEmpty() && !pass.isEmpty() && !pass2.isEmpty()) {
+            //CHECK THAT PASSWORDS MATCH
+            if(pass.equals(pass2)) {
+                new CreateNewUser().execute(); // creating new user in background thread
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "Passwords do not match!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Please fill all fields.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /** Called when the user taps the Back button */
@@ -105,11 +111,6 @@ public class SignUpActivity extends AppCompatActivity {
          * Creating product
          * */
         protected String doInBackground(String... args) {
-            /*
-            String first = firstName.getText().toString();
-            String last = lastName.getText().toString();
-            String user = username.getText().toString();
-            String pass = password.getText().toString();*/
 
             //First check if username is already taken by calling webservice that in turn calls a stored procedure
             // Building Parameters
@@ -129,15 +130,6 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if (success1 == 1) {
                     // There is no user with that username
-                    //Intent i = new Intent(getApplicationContext(), AllProductsActivity.class);
-                    //startActivity(i);
-                    /*
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Good Username pick!", Toast.LENGTH_LONG).show();
-                        }
-                    });*/
-
                     //NOW WE WILL CREATE THE USER
                     // Building Parameters
                     List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -159,8 +151,6 @@ public class SignUpActivity extends AppCompatActivity {
 
                         if (success == 1) {
                             // successfully created user
-                            //Intent i = new Intent(getApplicationContext(), AllProductsActivity.class);
-                            //startActivity(i);
                             runOnUiThread(new Runnable() {
 
                                 public void run() {
@@ -176,12 +166,9 @@ public class SignUpActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
 
                                 public void run() {
-
                                     Toast.makeText(getApplicationContext(), "Could not create user, check your internet connection!", Toast.LENGTH_SHORT).show();
-
                                 }
                             });
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
