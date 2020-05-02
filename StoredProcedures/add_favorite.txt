@@ -1,0 +1,7 @@
+DELIMITER //
+CREATE PROCEDURE add_favorite
+(IN u VARCHAR(100), IN i VARCHAR(100))
+BEGIN
+  INSERT INTO favorites (username, imdb) VALUES (u, i);
+END //
+DELIMITER ;

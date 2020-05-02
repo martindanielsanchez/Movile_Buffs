@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE retrieve_user
+(IN usern VARCHAR(100), OUT first VARCHAR(100), OUT last VARCHAR(100))
+BEGIN  
+  SELECT first_name, last_name INTO first, last FROM user
+  WHERE username = usern;
+END //
+DELIMITER ;

@@ -1,0 +1,8 @@
+DELIMITER //
+CREATE PROCEDURE check_username
+(IN userIn VARCHAR(100))
+BEGIN
+  SELECT username FROM user
+  WHERE username = userIn;
+END //
+DELIMITER ;

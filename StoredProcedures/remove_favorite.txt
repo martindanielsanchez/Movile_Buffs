@@ -1,0 +1,7 @@
+DELIMITER //
+CREATE PROCEDURE remove_favorite
+(IN u VARCHAR(100), IN i VARCHAR(100))
+BEGIN
+  DELETE FROM favorites WHERE u = username AND i = imdb;
+END //
+DELIMITER ;

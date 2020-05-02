@@ -1,0 +1,10 @@
+DELIMITER //
+CREATE PROCEDURE retrieve_favorites
+(IN usern VARCHAR(100))
+BEGIN
+
+  SELECT m.title, m.imdb FROM user u, favorites f, movie m
+  WHERE u.username = usern AND u.username = f.username AND f.imdb = m.imdb;
+  
+END //
+DELIMITER ;

@@ -1,0 +1,16 @@
+DELIMITER //
+CREATE PROCEDURE check_pass
+(IN usern VARCHAR(100), IN pass VARCHAR(100), OUT validate INT)
+BEGIN
+  DECLARE pass2 VARCHAR (100);
+  
+  SELECT password INTO pass2 FROM user
+  WHERE username = usern;
+  
+  IF pass2 = pass THEN
+  	SET validate = 1;
+  ELSE
+  	SET validate = 0;
+  END IF;
+END //
+DELIMITER ;
