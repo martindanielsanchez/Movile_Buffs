@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
     JSONParser jsonParser = new JSONParser();
     // url to create new product
-    private static String url_check_pass = "http://192.168.135.1:80/android_connect/check_pass.php";
+    private static String url_check_pass = "https://lamp.cse.fau.edu/~martinsanche2016/movile_buffs/check_pass.php";
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
     private static final String TAG_FIRST = "first";

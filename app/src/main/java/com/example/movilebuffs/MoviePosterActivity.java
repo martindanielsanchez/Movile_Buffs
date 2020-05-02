@@ -30,7 +30,6 @@ public class MoviePosterActivity extends AppCompatActivity {
         movieJSON = intent.getStringExtra(MovieDetailActivity.MOVIE); //get movie json string
 
         Picasso.get().load(posterLink).into(imageView);
-        Toast.makeText(MoviePosterActivity.this, "Link: " + posterLink, Toast.LENGTH_LONG).show();
     }
 
     /**

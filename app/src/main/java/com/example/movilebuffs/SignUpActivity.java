@@ -37,8 +37,8 @@ public class SignUpActivity extends AppCompatActivity {
     String pass2;
 
     // url to create new product
-    private static String url_create_user = "http://192.168.135.1:80/android_connect/create_user.php";
-    private static String url_check_username = "http://192.168.135.1:80/android_connect/check_username.php";
+    private static String url_create_user = "https://lamp.cse.fau.edu/~martinsanche2016/movile_buffs/create_user.php";
+  private static String url_check_username = "https://lamp.cse.fau.edu/~martinsanche2016/movile_buffs/check_username.php";
 
 
     // JSON Node names
@@ -90,7 +90,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     /**
-     * Background Async Task to Create new product
+     * Background Async Task to Create new user
      * */
     class CreateNewUser extends AsyncTask<String, String, String> {
 

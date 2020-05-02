@@ -39,8 +39,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     // Progress Dialog
     private ProgressDialog pDialog;
     JSONParser jsonParser = new JSONParser();
-    private static String url_add_favorite = "http://192.168.135.1:80/android_connect/add_favorite.php";
-    private static String url_remove_favorite = "http://192.168.135.1:80/android_connect/remove_favorite.php";
+    private static String url_add_favorite = "https://lamp.cse.fau.edu/~martinsanche2016/movile_buffs/add_favorite.php";
+    private static String url_remove_favorite = "https://lamp.cse.fau.edu/~martinsanche2016/movile_buffs/remove_favorite.php";
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
     private User logged;
