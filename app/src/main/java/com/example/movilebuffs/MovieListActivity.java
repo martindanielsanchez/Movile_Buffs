@@ -9,6 +9,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,7 +74,6 @@ public class MovieListActivity extends AppCompatActivity {
             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
                     //go to MovieDetailActivity and send the imdb code to make another API CALL from there
                     intent.putExtra(USER, userJSON); //also send USER
                     intent.putExtra(IMDB, imdbList.get(position));
@@ -93,9 +94,6 @@ public class MovieListActivity extends AppCompatActivity {
      * */
     public void searchMovies(View view) {
         final Intent intent = new Intent(this, MovieDetailActivity.class);
-        //startActivity(intent);
-
-       // final ScrollView list = (ScrollView) findViewById(R.id.scrollViewList);
         EditText ed1 = (EditText) findViewById(R.id.editText);
         String searchString = ed1.getText().toString();
 
@@ -106,6 +104,8 @@ public class MovieListActivity extends AppCompatActivity {
         // Get a RequestQueue
         RequestQueue queue = MySingleton.getInstance(MovieListActivity.this.getApplicationContext()).
                 getRequestQueue();
+
+
         String url = "http://www.omdbapi.com/?s=" + searchString + "&apikey=e7272e5d";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -136,8 +136,6 @@ public class MovieListActivity extends AppCompatActivity {
                                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                        //Toast.makeText(MovieListActivity.this, "clicked item " + position + " with imdb " + imdbList.get(position) + " " + arrayList.get(position), Toast.LENGTH_LONG).show();
-                                        //go to MovieDetailActivity and send the imdb code to make another API CALL from there
                                         intent.putExtra(USER, userJSON); //also send USER
                                         intent.putExtra(IMDB, imdbList.get(position));
                                         startActivity(intent);
@@ -148,8 +146,6 @@ public class MovieListActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            //textView.setText("City: " + cityName + '\n' + "Temperature: " + temperature + '\n' + "Wind: " + wind + '\n' + "Pressure: " + pressure + '\n' +
-                            //        "Humidity: " + humidity + '\n' + "Sunrise: " + sunrise);
                         }
                     }, new Response.ErrorListener() {
 

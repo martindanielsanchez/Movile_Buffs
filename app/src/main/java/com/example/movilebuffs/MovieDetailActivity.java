@@ -51,7 +51,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         Intent intent = getIntent();
-        //final String imdb = intent.getStringExtra(MovieListActivity.IMDB); //get imdb from selected movie
         imdb = intent.getStringExtra(MovieListActivity.IMDB); //get imdb from selected movie
         userJSON = intent.getStringExtra(MainActivity.USER); //get user json string
         //set up variables for textviews
@@ -59,9 +58,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         //first check if movie is on favorites list
         User logged = new Gson().fromJson(userJSON, User.class);
-        //isFavorite = logged.isMovieFavorite(film);
         ArrayList<Movie> favorites = logged.getFavorites();
-       // Boolean flag = false;
         if(favorites.isEmpty()){
             isFavorite = false;
         }
@@ -77,11 +74,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         Button favButton = (Button) findViewById(R.id.button3);
         if(isFavorite){
             favButton.setText("Remove from Favorites");
-            //Toast.makeText(MovieDetailActivity.this, "Inside Remove from Favorites", Toast.LENGTH_LONG).show();
         }
         else{
             favButton.setText("Add to Favorites");
-           // Toast.makeText(MovieDetailActivity.this, "Inside Add to Favorites. isFavorite = " + isFavorite, Toast.LENGTH_LONG).show();
         }
 
 
@@ -141,20 +136,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                 });
 // Access the RequestQueue through your singleton class.
         MySingleton.getInstance(MovieDetailActivity.this).addToRequestQueue(jsonObjectRequest);
-/*
-        //check if movie is in favorites list
-        User logged = new Gson().fromJson(userJSON, User.class);
-        isFavorite = logged.isMovieFavorite(film);
-        //set button text accordingly
-        Button favButton = (Button) findViewById(R.id.button3);
-        if(isFavorite){
-            favButton.setText("Remove from Favorites");
-            Toast.makeText(MovieDetailActivity.this, "Inside Remove from Favorites", Toast.LENGTH_LONG).show();
-        }
-        else{
-            favButton.setText("Add to Favorites");
-            Toast.makeText(MovieDetailActivity.this, "Inside Add to Favorites. isFavorite = " + isFavorite, Toast.LENGTH_LONG).show();
-        }*/
     }
 
     /**
@@ -196,14 +177,8 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         //first check if movie is already in list
         if(!logged.isMovieFavorite(film)) {
-           // Toast.makeText(MovieDetailActivity.this, "Movie not favorite, returned false", Toast.LENGTH_LONG).show();
-
             new AddFavorite().execute(); //updates database
             logged.addFavorite(film); //updates object used in app
-
-        }
-        else{
-            Toast.makeText(MovieDetailActivity.this, "Movie is favorite, returned true", Toast.LENGTH_LONG).show();
         }
         //Send user back to MovieListActivity
         Intent intent = new Intent(this, MovieListActivity.class);
@@ -254,7 +229,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         protected String doInBackground(String... args) {
 
             String username = logged.getUsername();
-            //String imdb = film.getImdb();
             String title = film.getTitle();
 
             // Building Parameters
@@ -276,7 +250,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                 if (success1 == 1) {
                     // favorite successfully added
-
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(getApplicationContext(), "Successfully added Favorite", Toast.LENGTH_LONG).show();
@@ -338,7 +311,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             List<NameValuePair> params1 = new ArrayList<NameValuePair>();
             params1.add(new BasicNameValuePair("username", username));
             params1.add(new BasicNameValuePair("imdb", imdb));
-            //params1.add(new BasicNameValuePair("title", title));
             // getting JSON Object
             // Note that add_favorite url accepts POST method
             JSONObject json1 = jsonParser.makeHttpRequest(url_remove_favorite,

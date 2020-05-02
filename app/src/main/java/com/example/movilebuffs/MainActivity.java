@@ -57,24 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         username = ed1.getText().toString();
         password = ed2.getText().toString();
-
-        //check if username is in database and retrieve it, if not alert user
-
         new CheckPassword().execute();
-
-
-/*
-        User logUser = new User("Valentino", "Rossi", "vale46", "123", new ArrayList<Movie>()); //CREATING USER FOR TESTING
-
-        Boolean validate = logUser.validateLogIn(pass);
-        if(validate){
-            String s = (new Gson().toJson(logUser)); //SERIALIZING OBJECT TO SEND IT TO NEXT ACTIVITY
-            intent.putExtra(USER, s);
-            startActivity(intent);
-        }
-        else {
-            Toast.makeText(getApplicationContext(), "Wrong username or password", Toast.LENGTH_SHORT).show();
-        }*/
     }
 
     /**
